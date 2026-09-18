@@ -1,0 +1,321 @@
+:root {
+  font-family:
+    Inter, Avenir, Helvetica, Arial, sans-serif;
+
+  color: #f5f5f5;
+  background: #0b0b0d;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 100vw;
+  min-height: 100vh;
+  background: #0b0b0d;
+}
+
+button {
+  font: inherit;
+}
+
+.app {
+  min-height: 100vh;
+  padding: 28px;
+  background:
+    radial-gradient(
+      circle at 20% 0%,
+      rgba(70, 70, 90, 0.18),
+      transparent 35%
+    ),
+    #0b0b0d;
+}
+
+/* Header */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 24px;
+}
+
+.brand {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.subtitle {
+  margin-top: 4px;
+  color: #77777f;
+  font-size: 13px;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 12px;
+
+  border: 1px solid #29292f;
+  border-radius: 999px;
+
+  color: #77777f;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.status.online {
+  color: #e5e5e5;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+  background: #55555d;
+}
+
+.status.online .status-dot {
+  background: #7ee787;
+  box-shadow: 0 0 10px rgba(126, 231, 135, 0.5);
+}
+
+/* Main workspace */
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 20px;
+
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Panels */
+
+.camera-panel,
+.detection-panel {
+  overflow: hidden;
+
+  border: 1px solid #24242a;
+  border-radius: 16px;
+
+  background: #111114;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 14px 16px;
+
+  border-bottom: 1px solid #24242a;
+
+  color: #aaaab2;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.resolution {
+  color: #62626a;
+}
+
+/* Camera */
+
+.video-container {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 520px;
+
+  background: #08080a;
+}
+
+.video {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  min-height: 520px;
+
+  object-fit: cover;
+
+  transform: scaleX(-1);
+}
+
+.camera-placeholder {
+  padding: 40px;
+
+  text-align: center;
+}
+
+.camera-icon {
+  margin-bottom: 18px;
+
+  font-size: 48px;
+  color: #55555d;
+}
+
+.camera-placeholder h2 {
+  margin: 0 0 8px;
+
+  font-size: 18px;
+}
+
+.camera-placeholder p {
+  margin: 0;
+
+  max-width: 320px;
+
+  color: #66666e;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.camera-controls {
+  display: flex;
+  justify-content: center;
+
+  padding: 18px;
+
+  border-top: 1px solid #24242a;
+}
+
+.primary-button,
+.secondary-button {
+  padding: 10px 20px;
+
+  border-radius: 9px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.primary-button {
+  border: 1px solid #e5e5e5;
+
+  color: #0b0b0d;
+  background: #f5f5f5;
+}
+
+.secondary-button {
+  border: 1px solid #33333a;
+
+  color: #dddde2;
+  background: #1a1a1e;
+}
+
+.primary-button:hover,
+.secondary-button:hover {
+  transform: translateY(-1px);
+}
+
+.error-message {
+  padding: 12px 16px;
+
+  border-top: 1px solid #3a2424;
+
+  color: #ff8f8f;
+  background: #1a1010;
+
+  font-size: 12px;
+  text-align: center;
+}
+
+/* Detection */
+
+.detection-panel {
+  align-self: start;
+}
+
+.detection-state {
+  padding: 28px 20px;
+}
+
+.state-label {
+  color: #66666e;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.event-name {
+  margin-top: 14px;
+
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.state-description {
+  margin-top: 8px;
+
+  color: #66666e;
+
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.detection-divider {
+  height: 1px;
+  margin: 0 20px;
+
+  background: #24242a;
+}
+
+.detection-row {
+  display: flex;
+  justify-content: space-between;
+
+  padding: 15px 20px;
+
+  border-bottom: 1px solid #1c1c20;
+
+  color: #888890;
+  font-size: 12px;
+}
+
+.detection-row span:last-child {
+  color: #dddde2;
+  font-weight: 700;
+}
+
+/* Responsive */
+
+@media (max-width: 900px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .detection-panel {
+    width: 100%;
+  }
+
+  .video-container,
+  .video {
+    min-height: 400px;
+  }
+}
