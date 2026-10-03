@@ -7,69 +7,48 @@ class EventEngineConfig:
 
 
 class HandsTogetherEventEngine:
-    """
-    Converts a stable gesture state into a one-shot event.
-
-    The temporal filter is responsible for deciding whether
-    the gesture is stable.
-
-    This layer is responsible for:
-    - firing only once when the gesture becomes active
-    - preventing repeated events
-    - waiting for the gesture to be released
-    - applying cooldown
-    """
-
-    def __init__(
-        self,
-        config: EventEngineConfig | None = None,
-    ) -> None:
+    def __init__(self, config=None):
         self.config = config or EventEngineConfig()
 
         self.cooldown_remaining = 0
         self.active = False
+        self.armed = True
 
-    def update(self, stable_prayer: bool) -> str | None:
-        """
-        Process a stable gesture state.
-
-        Returns:
-            'prayer' when a new prayer event occurs.
-            None otherwise.
-        """
-
-        # -----------------------------------------
-        # Cooldown
-        # -----------------------------------------
+    def update_gesture(
+        self,
+        gesture_name: str,
+        stable_detected: bool,
+    ) -> str | None:
 
         if self.cooldown_remaining > 0:
             self.cooldown_remaining -= 1
 
-        # -----------------------------------------
-        # Gesture is active
-        # -----------------------------------------
+        # Gesture is currently being held
+        if stable_detected:
 
-        if stable_prayer:
-
-            # Already active.
-            # Do not fire another event.
-            if self.active:
+            # Already fired for this gesture
+            if not self.armed:
                 return None
 
-            # New gesture + cooldown finished.
+            # Fire once
             if self.cooldown_remaining == 0:
                 self.active = True
-                self.cooldown_remaining = (
-                    self.config.cooldown_frames
-                )
+                self.armed = False
+                return gesture_name
 
-                return "prayer"
+            return None
 
-        # -----------------------------------------
-        # Gesture released
-        # -----------------------------------------
+        # Gesture has been released
+        self.active = False
 
-        else:
-            self.active = False
+        # Re-arm only after release
+        if self.cooldown_remaining == 0:
+            self.armed = True
 
         return None
+
+    def update(self, stable_prayer: bool) -> str | None:
+        return self.update_gesture(
+            "prayer",
+            stable_prayer,
+        )

@@ -405,3 +405,108 @@ class GestureDetector:
             return False
 
         return True
+    # ---------------------------------------------------------
+    # Single-finger state
+    # ---------------------------------------------------------
+
+    def _is_finger_extended(
+        self,
+        landmarks: list[dict],
+        tip_index: int,
+        pip_index: int,
+    ) -> bool:
+        """
+        Check whether a finger is reasonably extended based on
+        the fingertip being farther from the wrist than the PIP joint.
+        """
+
+        wrist = landmarks[self.WRIST]
+        tip = landmarks[tip_index]
+        pip = landmarks[pip_index]
+
+        tip_distance = self._distance(wrist, tip)
+        pip_distance = self._distance(wrist, pip)
+
+        return tip_distance > pip_distance * 1.1
+
+    def _is_finger_folded(
+        self,
+        landmarks: list[dict],
+        tip_index: int,
+        pip_index: int,
+    ) -> bool:
+        """
+        Check whether a finger is reasonably folded.
+        """
+
+        wrist = landmarks[self.WRIST]
+        tip = landmarks[tip_index]
+        pip = landmarks[pip_index]
+
+        tip_distance = self._distance(wrist, tip)
+        pip_distance = self._distance(wrist, pip)
+
+        return tip_distance < pip_distance * 1.15
+
+    # ---------------------------------------------------------
+    # Thumbs-up detector
+    # ---------------------------------------------------------
+
+    def detect_thumbs_up(
+        self,
+        hands: list[dict],
+    ) -> bool:
+        """
+        Detect a thumbs-up gesture on any detected hand.
+
+        Requires, on at least one hand:
+        - thumb extended
+        - thumb pointing up
+        - index/middle/ring/pinky folded
+        """
+
+        if len(hands) == 0:
+            return False
+
+        for hand in hands:
+            landmarks = hand["landmarks"]
+
+            # Thumb should be extended.
+            thumb_tip = landmarks[self.THUMB_TIP]
+            thumb_mcp = landmarks[2]
+            wrist = landmarks[self.WRIST]
+
+            thumb_extended = (
+                self._distance(wrist, thumb_tip)
+                > self._distance(wrist, thumb_mcp) * 1.2
+            )
+
+            if not thumb_extended:
+                continue
+
+            # Thumb should point mostly upward (within ~45° of vertical),
+            # so sideways thumbs with a slight upward tilt are rejected.
+            # Image y grows downward, so "up" means negative dy.
+            dx = thumb_tip["x"] - thumb_mcp["x"]
+            dy = thumb_tip["y"] - thumb_mcp["y"]
+
+            thumb_points_up = -dy > abs(dx)
+
+            if not thumb_points_up:
+                continue
+
+            # Other four fingers should be folded.
+            index_folded = self._is_finger_folded(landmarks, 8, 6)
+            middle_folded = self._is_finger_folded(landmarks, 12, 10)
+            ring_folded = self._is_finger_folded(landmarks, 16, 14)
+            pinky_folded = self._is_finger_folded(landmarks, 20, 18)
+
+            if (
+                index_folded
+                and middle_folded
+                and ring_folded
+                and pinky_folded
+            ):
+                return True
+
+        return False

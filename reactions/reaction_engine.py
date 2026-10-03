@@ -2,7 +2,6 @@ from pathlib import Path
 import time
 
 import cv2
-import pygame
 
 from reactions.reaction_registry import Reaction, get_reaction
 from obs.obs_client import OBSClient
@@ -22,8 +21,6 @@ class ReactionEngine:
         self.current_reaction: Reaction | None = None
         self.reaction_started_at: float | None = None
 
-        pygame.mixer.init()
-
     def trigger(self, event: str) -> None:
         reaction = get_reaction(event)
 
@@ -36,34 +33,24 @@ class ReactionEngine:
 
         print(f"🔥 REACTION: {reaction.event}")
 
-        # -------------------------
-        # OBS output
-        # -------------------------
         if self.obs_client is not None:
-            self.obs_client.set_source_visibility(
+            # Show reaction image
+            if reaction.image_path:
+                self.obs_client.set_source_visibility(
+                    self.obs_scene,
+                    "Prayer Reaction",
+                    True,
+                )
+
+            # Play reaction audio through OBS
+            if reaction.audio_path:
+                print(f"   Audio: {reaction.audio_path}")
+
+                self.obs_client.play_media_source(
                 self.obs_scene,
-                "Prayer Reaction",
-                True,
-            )
+                reaction.audio_source,
+)
 
-        # -------------------------
-        # Audio
-        # -------------------------
-        if reaction.audio_path:
-            audio_path = Path(reaction.audio_path)
-
-            print(f"   Audio: {audio_path}")
-
-            if audio_path.exists():
-                pygame.mixer.music.load(str(audio_path))
-                pygame.mixer.music.set_volume(reaction.volume)
-                pygame.mixer.music.play()
-            else:
-                print(f"Audio file not found: {audio_path}")
-
-        # -------------------------
-        # Local preview info
-        # -------------------------
         if reaction.image_path:
             print(f"   Image: {reaction.image_path}")
 
@@ -80,7 +67,6 @@ class ReactionEngine:
             self.clear()
             return
 
-        # Local OpenCV preview
         if not self.local_preview:
             return
 
@@ -106,24 +92,13 @@ class ReactionEngine:
         cv2.imshow("Stream Reaction", image)
 
     def clear(self) -> None:
-        # -------------------------
-        # Stop audio
-        # -------------------------
-        pygame.mixer.music.stop()
-
-        # -------------------------
-        # Hide OBS source
-        # -------------------------
-        if self.obs_client is not None:
+        if self.obs_client is not None and self.current_reaction is not None:
             self.obs_client.set_source_visibility(
-                self.obs_scene,
-                "Prayer Reaction",
-                False,
-            )
+            self.obs_scene,
+            self.current_reaction.image_source,
+            False,
+        )
 
-        # -------------------------
-        # Reset reaction state
-        # -------------------------
         self.current_reaction = None
         self.reaction_started_at = None
 

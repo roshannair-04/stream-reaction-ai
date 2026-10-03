@@ -1,3 +1,5 @@
+import time
+
 import obsws_python as obs
 
 
@@ -60,3 +62,28 @@ class OBSClient:
         state = "visible" if visible else "hidden"
 
         print(f"👁️ {source_name}: {state}")
+
+    def play_media_source(
+        self,
+        scene_name: str,
+        source_name: str,
+    ) -> None:
+        """Start playback of an OBS Media Source."""
+        if self.client is None:
+            raise RuntimeError("OBS is not connected.")
+
+        # Reset source state
+        self.set_source_visibility(
+            scene_name,
+            source_name,
+            False,
+        )
+
+        time.sleep(0.1)
+
+        # Activating the source starts playback in OBS
+        self.set_source_visibility(
+            scene_name,
+            source_name,
+            True,
+        )
