@@ -510,3 +510,61 @@ class GestureDetector:
                 return True
 
         return False
+
+    def detect_wave(
+        self,
+        hands: list[dict],
+    ) -> bool:
+        """
+        Detect a wave-like hand orientation.
+
+        A wave is considered possible when:
+        - at least one hand is visible
+        - the palm is roughly facing the camera
+        - the hand is reasonably open
+        """
+
+        if len(hands) == 0:
+            return False
+
+        for hand in hands:
+            landmarks = hand["landmarks"]
+
+            # Require an open hand.
+            index_extended = self._is_finger_extended(
+                landmarks, 8, 6
+            )
+            middle_extended = self._is_finger_extended(
+                landmarks, 12, 10
+            )
+            ring_extended = self._is_finger_extended(
+                landmarks, 16, 14
+            )
+            pinky_extended = self._is_finger_extended(
+                landmarks, 20, 18
+            )
+
+            extended_count = sum([
+                index_extended,
+                middle_extended,
+                ring_extended,
+                pinky_extended,
+            ])
+
+            if extended_count < 3:
+                continue
+
+            # Palm roughly facing the camera.
+            wrist = landmarks[0]
+            middle_mcp = landmarks[9]
+
+            palm_height = abs(
+                middle_mcp["y"] - wrist["y"]
+            )
+
+            if palm_height < 0.08:
+                continue
+
+            return True
+
+        return False

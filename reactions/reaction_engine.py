@@ -38,7 +38,7 @@ class ReactionEngine:
             if reaction.image_path:
                 self.obs_client.set_source_visibility(
                     self.obs_scene,
-                    "Prayer Reaction",
+                    reaction.image_source,
                     True,
                 )
 

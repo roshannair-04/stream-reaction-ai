@@ -35,6 +35,15 @@ REACTIONS = {
     duration=3.0,
     volume=1.0,
 ),
+    "wave": Reaction(
+    event="wave",
+    image_path="reactions/assets/wave.jpeg",
+    audio_path="reactions/assets/wave.mp3",
+    image_source="Wave Reaction",
+    audio_source="Wave Audio",
+    duration=4.9,
+    volume=1.0,
+),
 }
 
 
