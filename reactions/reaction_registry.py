@@ -44,6 +44,15 @@ REACTIONS = {
     duration=4.9,
     volume=1.0,
 ),
+    "shock": Reaction(
+    event="shock",
+    image_path="reactions/assets/shock.gif",
+    audio_path="reactions/assets/shock.mp3",
+    image_source="Shock Reaction",
+    audio_source="Shock Audio",
+    duration=9.4,
+    volume=1.0,
+),
 }
 
 
